@@ -20,6 +20,32 @@ export class QuizManager{
         })
     }
 
+    addUser(roomId, name){
+        const quiz = this.getQuiz(roomId);
+        if(quiz){
+            quiz.addUser(name);
+        }   
+    }
+
+    submit(roomId, userId, problemId, submission){
+        return this.getQuiz(roomId)?.submit(userId, roomId, problemId, submission);
+    }
+
+    getQuiz(roomId){
+        const quiz = this.quizes.find((x) => x.roomId === roomId);
+        return quiz ?? null;
+    }
+
+    getCurrentState(roomId){
+        const quiz = this.getQuiz(roomId);
+        if(!quiz){
+            return null;
+        }
+        return quiz.getCurrentState();
+    }
+
+    
+
 
 
 }
