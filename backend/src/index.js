@@ -1,8 +1,8 @@
-import { IoManager } from "./managers/IoManager";
+import { IoManager } from "./managers/IoManager.js";
 
-const io = new IoManager.getInstance().io
+const io = IoManager.getInstance();
 
-io.listen(3000)
+io.listen(3000);
 
 io.on("connection", (socket) => {
   console.log("a user connected:", socket.id);

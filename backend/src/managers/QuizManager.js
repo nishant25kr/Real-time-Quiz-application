@@ -1,4 +1,5 @@
 import { IoManager } from "./IoManager";
+let globalProblemId = 0;
 
 export class QuizManager{
     #quizes = [];
@@ -8,16 +9,32 @@ export class QuizManager{
 
     static Start(roomId){
         const io = IoManager.getInstance();
-        io.to(roomId).emit({
-            type:"START_ROOM"
-        })
+        const quiz = this.getQuiz(roomId);
+        if(!quiz){
+            return;
+        }
+        quiz.start();
+    }
+
+    static addProblem(roomId, problem){
+        const quiz = this.getQuiz(roomId);
+        if(!quiz){
+            return;
+        }
+        quiz.addProblem({
+            ...problem,
+            id: globalProblemId++,
+            startTime: Date.now(),
+            submission: []
+        });
     }
 
     static next(roomId){
-        const io = IoManager.getInstance();
-        io.to(roomId).emit({
-            type:"NEXT_QUESTION"
-        })
+        const quiz = this.getQuiz(roomId);
+        if(!quiz){
+            return;
+        }
+        quiz.next();
     }
 
     addUser(roomId, name){
@@ -44,6 +61,11 @@ export class QuizManager{
         return quiz.getCurrentState();
     }
 
+    addQuiz(roomId, hasStarted = false){
+        const quiz = new Quix(roomId, hasStarted);
+        this.quizes.push(quiz);
+        return quiz;
+    }
     
 
 

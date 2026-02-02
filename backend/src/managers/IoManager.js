@@ -1,15 +1,23 @@
+import http from "http";
 import { Server } from "socket.io";
-import http from "http"
 
 const server = http.createServer();
 
-export class IoManager{
-    #io;
-    static getInstance(io){
-        if(!this.io){
-            const io = new Server(server)
-            this.io = io;
-        }
-        return this.io;
+export class IoManager {
+  static io;
+
+  // singleton
+  static getInstance() {
+    if (!this.io) {
+      this.io = new Server(server, {
+        cors: {
+          origin: "*",
+          methods: ["GET", "POST"],
+        },
+      });
     }
+    return this.io;
+  }
 }
+
+export { server };

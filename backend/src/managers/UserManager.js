@@ -1,6 +1,8 @@
 import { Socket } from "socket.io";
 import { QuizManager } from "./QuizManager";
 
+ADMIN_PASSWORD = "supersecretpassword";
+
 export class UserManager{
     constructor() {
         this.users = [];
@@ -16,17 +18,38 @@ export class UserManager{
     createHandler(roomId, socketId) {
         Socket.on("join",(data)=>{
             const userId = this.QuizManager.addUser(data.roomId, data.name)
-            socketId.emit("userId",{
+            socketId.emit("init",{
                 userId,
                 state: this.QuizManager.getCurrentState(data.roomId)
             })
         })
 
-        Socket.on("admin_join",(data)=>{
-            if(data.passoword !== A)
-            socketId.emit("admin_joined",{
-                type: "admin_joined"
+        Socket.on("join_admin",(data)=>{
+            const userId = this.QuizManager.addUser(data.roomId, data.name);
+
+            if(data.passoword !== ADMIN_PASSWORD){
+                return;
+            }
+
+            socketId.emit("adminInit",{
+                userId,
+                state: this.QuizManager.getCurrentState(data.roomId)
+
             })
+
+            socketId.emit("createProblem", (data)=>{
+                const roomId = data.roomId;
+                this.QuizManager.addProblem(data.roomId, data.problem);
+            })
+            socketId.emit("next", (data)=>{
+                const roomId = data.roomId;
+                this.QuizManager.next(roomId);
+            })
+
+            socketId.emit("createQuiz", (data)=>{
+                this.QuizManager.addQuiz(data.roomId);
+            })
+
         })
 
         Socket.on("submit",(data)=>{
@@ -42,9 +65,8 @@ export class UserManager{
                 this.QuizManager.submit(userId, data.roomId, problemId, submission);
             }
         })
+
+        socket.on
     }
-
-
-
-    
+  
 };
