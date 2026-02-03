@@ -1,72 +1,69 @@
 import { Socket } from "socket.io";
 import { QuizManager } from "./QuizManager";
-
 ADMIN_PASSWORD = "supersecretpassword";
 
-export class UserManager{
+export class UserManager {
+    static quizManager;
+
     constructor() {
-        this.users = [];
+        this.quizManager = new QuizManager;
     }
 
-
-    addUser(userId, socketId){
-        this.users.push({userId, socketId});
-
-        this.createHandler(roomId,socketId);
+    addUser(socket) {
+        this.createHandler(socket);
     }
 
-    createHandler(roomId, socketId) {
-        Socket.on("join",(data)=>{
-            const userId = this.QuizManager.addUser(data.roomId, data.name)
-            socketId.emit("init",{
+    createHandler(socket) {
+
+        socket.on("join", (data) => {
+            const userId = this.quizManager.addUser(data.roomId, data.name)
+            socket.emit("init", {
                 userId,
-                state: this.QuizManager.getCurrentState(data.roomId)
+                state: this.quizManager.getCurrentState(data.roomId)
             })
+            socket.join(data.roomId);
         })
 
-        Socket.on("join_admin",(data)=>{
-            const userId = this.QuizManager.addUser(data.roomId, data.name);
-
-            if(data.passoword !== ADMIN_PASSWORD){
+        socket.on("joinAdmin", (data) => {
+            if (data.password !== ADMIN_PASSWORD) {
                 return;
             }
 
-            socketId.emit("adminInit",{
-                userId,
-                state: this.QuizManager.getCurrentState(data.roomId)
+            if (data.passoword !== ADMIN_PASSWORD) {
+                return;
+            }
 
-            })
+            console.log("join admin called");
 
-            socketId.emit("createProblem", (data)=>{
-                const roomId = data.roomId;
-                this.QuizManager.addProblem(data.roomId, data.problem);
-            })
-            socketId.emit("next", (data)=>{
-                const roomId = data.roomId;
-                this.QuizManager.next(roomId);
+            socket.on("createQuiz", data => {
+                this.quizManager.addQuiz(data.roomId);
             })
 
-            socketId.emit("createQuiz", (data)=>{
-                this.QuizManager.addQuiz(data.roomId);
-            })
+            socket.on("createProblem", data => {
+                this.quizManager.addProblem(data.roomId, data.problem);
+            });
+
+            socket.on("next", data => {
+                this.quizManager.next(data.roomId);
+            });
 
         })
 
-        Socket.on("submit",(data)=>{
+        socket.on("submit", (data) => {
             const userId = data.userId;
             const problemId = data.problemId;
             const submission = data.submission;
+            const roomId = data.roomId;
 
-            if(submission != 0 && submission != 1 && submission != 2 && submission != 3){
-                socketId.emit("INVALID_SUBMISSION",{
-                    message: "Invalid submission"
-                })
-            }else{
-                this.QuizManager.submit(userId, data.roomId, problemId, submission);
+            if (submission != 0 && submission != 1 && submission != 2 && submission != 3) {
+                console.error("issue while getting input " + submission)
+                return;
             }
-        })
 
-        socket.on
+            console.log("submitting")
+            console.log(roomId);
+            this.quizManager.submit(userId, roomId, problemId, submission)
+        });
     }
-  
+
 };

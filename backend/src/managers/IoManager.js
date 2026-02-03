@@ -6,15 +6,9 @@ const server = http.createServer();
 export class IoManager {
   static io;
 
-  // singleton
   static getInstance() {
     if (!this.io) {
-      this.io = new Server(server, {
-        cors: {
-          origin: "*",
-          methods: ["GET", "POST"],
-        },
-      });
+      this.io = new Server(server);
     }
     return this.io;
   }
