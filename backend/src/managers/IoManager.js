@@ -8,7 +8,12 @@ export class IoManager {
 
   static getInstance() {
     if (!this.io) {
-      this.io = new Server(server);
+      this.io = new Server(server, {
+        cors: {
+          origin: "*",
+          methods: ["GET", "POST"],
+        },
+      });
     }
     return this.io;
   }
