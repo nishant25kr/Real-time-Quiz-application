@@ -1,28 +1,21 @@
-import { useEffect } from 'react'
-import { useState } from 'react'
-import { io } from "socket.io-client"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Admin from "./components/Admin.jsx"
+import Users from "./components/Users.jsx";
+
 
 function App() {
-  const [count, setCount] = useState(0)
+    return (
 
-  useEffect(() => {
-    const socket = io("http://localhost:3030")
+        <BrowserRouter>
+            <Routes>
+                <Route  >
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/users" element={<Users />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    )
 
-    socket.on("connect", () => {
-      console.log(socket.id)
-      socket.emit("joinAdmin",{
-        password: "ADMIN_PASSWORD"
-      })
-    })
-
-  }, [])
-
-  return (
-    <>
-      <h1>H from Quiz</h1>
-
-    </>
-  )
 }
 
 export default App

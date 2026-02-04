@@ -1,4 +1,4 @@
-import { IoManager } from "./managers/IoManager";
+import { IoManager } from "./managers/IoManager.js";
 
 const PROBLEM_TIME_LIMIT = 10;
 
@@ -45,6 +45,7 @@ export class Quiz {
     #currentState;
 
     constructor(roomId, hasStarted = false) {
+
         this.#roomId = roomId;
         this.#hasStarted = hasStarted;
         this.#problems = [];
@@ -52,9 +53,23 @@ export class Quiz {
         this.#activeProblem = 0;
         this.#currentState = "not_started"; 
 
+        setInterval(()=>{
+            this.debug()
+        },10000)
+
+    }
+    debug(){
+        console.log("-----degub----")
+        console.log(this.#roomId)
+        console.log(this.#problems)
+        console.log(this.#users)
     }
 
-    addProblem(problem) {
+    get roomId() {
+        return this.#roomId;
+    }
+
+    addProblem(roomId,problem) {
         this.#problems.push(problem);
     }
 

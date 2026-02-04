@@ -1,12 +1,11 @@
-import { Socket } from "socket.io";
-import { QuizManager } from "./QuizManager";
-ADMIN_PASSWORD = "supersecretpassword";
+import { QuizManager } from "./QuizManager.js";
+const ADMIN_PASSWORD = "supersecretpassword";
 
 export class UserManager {
     static quizManager;
 
     constructor() {
-        this.quizManager = new QuizManager;
+        this.quizManager = new QuizManager();
     }
 
     addUser(socket) {
@@ -16,6 +15,8 @@ export class UserManager {
     createHandler(socket) {
 
         socket.on("join", (data) => {
+
+            console.log("inside join")
             const userId = this.quizManager.addUser(data.roomId, data.name)
             socket.emit("init", {
                 userId,
@@ -28,25 +29,19 @@ export class UserManager {
             if (data.password !== ADMIN_PASSWORD) {
                 return;
             }
-
-            if (data.passoword !== ADMIN_PASSWORD) {
-                return;
-            }
-
-            console.log("join admin called");
-
+            
             socket.on("createQuiz", data => {
                 this.quizManager.addQuiz(data.roomId);
             })
-
+            
             socket.on("createProblem", data => {
                 this.quizManager.addProblem(data.roomId, data.problem);
             });
-
+            
             socket.on("next", data => {
                 this.quizManager.next(data.roomId);
             });
-
+            
         })
 
         socket.on("submit", (data) => {
@@ -61,7 +56,6 @@ export class UserManager {
             }
 
             console.log("submitting")
-            console.log(roomId);
             this.quizManager.submit(userId, roomId, problemId, submission)
         });
     }
