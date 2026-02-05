@@ -1,4 +1,5 @@
 import react from "react"
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { io } from "socket.io-client"
@@ -8,9 +9,10 @@ import CreateProblem from './CreateProblem.jsx'
 import QuizController from "./QuizController.jsx"
 
 const Admin = () => {
+      const navigate = useNavigate();
+
     const [socket, setSocket] = useState(null)
     const [roomId, setRoomId] = useState("")
-    const [quiz, setQuiz] = useState("")
     const [quizId, setQuizId] = useState("")
 
     useEffect(() => {
@@ -60,10 +62,15 @@ const Admin = () => {
     }
 
     return (
-        <>
+        <div className="m-2 flex flex-col">
             <CreateProblem roomId = {quizId} socket={socket} />
-            <QuizController/>
-        </>
+            <button
+                className="mx-auto border p-3"
+                onClick={() => navigate('/leaderboard')}
+                >
+                    Create Quiz
+                    </button>
+        </div>
     )
 }
 

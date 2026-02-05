@@ -35,10 +35,12 @@ export class QuizManager {
     }
 
     next(roomId) {
+        console.log("in")
         const quiz = this.getQuiz(roomId);
         if (!quiz) {
             return;
         }
+        console.log(quiz)
         quiz.next();
     }
 
@@ -68,11 +70,6 @@ export class QuizManager {
     addQuiz(roomId, hasStarted = false) {
         const quiz = new Quiz(roomId, hasStarted);
         this.#quizes.push(quiz);
-        
-        console.log("PRIVATE quizzes:", this.#quizes);
-
-        const quizs = this.getQuiz(roomId);
-        console.log(quizs) 
         return quiz;
     }
 

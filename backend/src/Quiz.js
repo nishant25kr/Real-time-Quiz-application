@@ -112,8 +112,13 @@ export class Quiz {
     }
 
     next() {
+
+        console.log('In quiznext')
         this.#activeProblem++;
-        const problem = this.#problems[this.#activeProblem];
+        // console.log(this.#problems[0])
+        // console.log(this.#activeProblem)
+        const problem = this.#problems[this.#activeProblem-1];
+        console.log(problem)
         const io = IoManager.getInstance();
 
         if (problem) {

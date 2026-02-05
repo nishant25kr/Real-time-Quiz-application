@@ -1,20 +1,24 @@
 import { useState } from "react";
 
 const CreateProblem = ({ socket, roomId }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [answer, setAnswer] = useState(null);
-  const [options, setOption] = useState([
+  const initialOptions = [
     { id: 1, title: "" },
     { id: 2, title: "" },
     { id: 3, title: "" },
     { id: 4, title: "" },
-  ]);
+  ];
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [answer, setAnswer] = useState(null);
+  const [options, setOptions] = useState(initialOptions);
 
   const handleSubmit = () => {
-    if(!roomId || !title || !description || !options || !answer){
-      alert("Invalid props")
+    if (!roomId || !title || !description || answer === null) {
+      alert("Invalid props");
+      return;
     }
+
     socket.emit("createProblem", {
       roomId,
       problem: {
@@ -24,6 +28,12 @@ const CreateProblem = ({ socket, roomId }) => {
         answer,
       },
     });
+
+    // ✅ RESET ALL INPUTS
+    setTitle("");
+    setDescription("");
+    setAnswer(null);
+    setOptions(initialOptions);
   };
 
   return (
@@ -36,12 +46,14 @@ const CreateProblem = ({ socket, roomId }) => {
         <input
           placeholder="Enter title"
           className="w-full border rounded px-3 py-2 mb-4"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <input
           placeholder="Enter description"
           className="w-full border rounded px-3 py-2 mb-4"
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
 
@@ -60,9 +72,10 @@ const CreateProblem = ({ socket, roomId }) => {
               type="text"
               placeholder="Enter option"
               className="w-full border rounded px-3 py-2 mt-1"
+              value={opt.title}
               onChange={(e) =>
-                setOption(prev =>
-                  prev.map(o =>
+                setOptions((prev) =>
+                  prev.map((o) =>
                     o.id === opt.id
                       ? { ...o, title: e.target.value }
                       : o
