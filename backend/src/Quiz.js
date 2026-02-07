@@ -7,7 +7,7 @@ const PROBLEM_TIME_LIMIT = 10;
  * @property {string|number} id
  * @property {string} title
  */
- 
+
 /**
  * @typedef {Object} Submission
  * @property { string } problemId
@@ -51,14 +51,14 @@ export class Quiz {
         this.#problems = [];
         this.#users = [];
         this.#activeProblem = 0;
-        this.#currentState = "not_started"; 
+        this.#currentState = "not_started";
 
-        setInterval(()=>{
+        setInterval(() => {
             this.debug()
-        },10000)
+        }, 10000)
 
     }
-    debug(){
+    debug() {
         console.log("-----degub----")
         console.log(this.#roomId)
         console.log(this.#problems)
@@ -69,7 +69,7 @@ export class Quiz {
         return this.#roomId;
     }
 
-    addProblem(roomId,problem) {
+    addProblem(roomId, problem) {
         this.#problems.push(problem);
     }
 
@@ -88,10 +88,12 @@ export class Quiz {
     setActiveProblem(problem) {
         const io = IoManager.getInstance();
 
+        this.currentState = "question"
+
         problem.startTime = Date.now();
         problem.submission = [];
 
-        io.to(this.#roomId).emit("CHANGE_PROBLEM", { problem });
+        io.to(this.#roomId).emit("problem", { problem });
 
         setTimeout(() => {
             this.sendLeaderboard();
@@ -105,25 +107,24 @@ export class Quiz {
 
 
     sendLeaderboard() {
+        this.#currentState = "leaderboard"
+
         const leaderboard = this.getLeaderBoard();
-        IoManager.getInstance().to(this.#roomId).emit("LEADERBOARD_UPDATE", {
+        IoManager.getInstance().to(this.roomId).emit("leaderboard", {
             leaderboard
         })
     }
 
     next() {
 
-        console.log('In quiznext')
-        this.#activeProblem++;
-        // console.log(this.#problems[0])
-        // console.log(this.#activeProblem)
-        const problem = this.#problems[this.#activeProblem-1];
-        console.log(problem)
+        const problem = this.#problems[this.#activeProblem];
         const io = IoManager.getInstance();
+        this.#activeProblem++;
 
         if (problem) {
             this.setActiveProblem(problem);
         } else {
+            this.#activeProblem--;
             // IoManager.getInstance().emit("QUIZ_END", {
             //     problem
             // });
@@ -140,11 +141,12 @@ export class Quiz {
         return id;
     }
 
-    submit(userId, roomId, problemId, submission) {
+    submit(userId, problemId, submission) {
         const problem = this.#problems.find(p => p.id === problemId);
         const user = this.#users.find(u => u.id === userId);
 
         if (!problem || !user) {
+
             return;
         }
         const existingSubmission = problem.submission.find(s => s.userId === userId);
@@ -163,29 +165,29 @@ export class Quiz {
     }
 
     getCurrentState() {
-        if(this.#currentState == "not_started"){
+        if (this.#currentState == "not_started") {
             return {
                 type: "not_started"
             }
         }
-        if(this.#currentState == "questions"){
+        if (this.#currentState == "questions") {
             return {
                 type: "questions",
                 problem: this.#problems[this.#activeProblem]
             }
         }
-        if(this.#currentState == "leaderboard"){
+        if (this.#currentState == "leaderboard") {
             return {
                 type: "leaderboard",
                 leaderboard: this.getLeaderBoard()
             }
         }
-        if(this.#currentState == "ended"){
+        if (this.#currentState == "ended") {
             return {
                 type: "ended",
                 leaderboard: this.getLeaderBoard()
             }
         }
     }
-    
+
 }

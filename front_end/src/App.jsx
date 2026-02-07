@@ -1,18 +1,17 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Admin from "./components/Admin.jsx"
-import Users from "./components/Users.jsx";
-import LeaderBoard from "./components/LeaderBoard.jsx";
+import { Admin } from "./components/Admin.jsx"
+import { User } from "./components/Users.jsx";
 
 
 function App() {
     return (
 
+
         <BrowserRouter>
             <Routes>
                 <Route  >
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/leaderboard" element={<LeaderBoard/>} />
-                    <Route path="/users" element={<Users />} />
+                    <Route path="/user" element={<User />} />
                 </Route>
             </Routes>
         </BrowserRouter>

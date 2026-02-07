@@ -16,7 +16,6 @@ export class UserManager {
 
         socket.on("join", (data) => {
 
-            console.log("inside join")
             const userId = this.quizManager.addUser(data.roomId, data.name)
             socket.emit("init", {
                 userId,
@@ -39,13 +38,14 @@ export class UserManager {
             });
             
             socket.on("next", data => {
-                console.log("inside next");
+
                 this.quizManager.next(data.roomId);
             });
             
         })
 
         socket.on("submit", (data) => {
+
             const userId = data.userId;
             const problemId = data.problemId;
             const submission = data.submission;
@@ -56,8 +56,9 @@ export class UserManager {
                 return;
             }
 
-            console.log("submitting")
-            this.quizManager.submit(userId, roomId, problemId, submission)
+
+            this.quizManager.submit(roomId, userId, problemId, submission)
+            roomId, userId, problemId, submission
         });
     }
 

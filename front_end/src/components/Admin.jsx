@@ -8,7 +8,7 @@ const ADMIN_PASSWORD = "supersecretpassword";
 import CreateProblem from './CreateProblem.jsx'
 import QuizController from "./QuizController.jsx"
 
-const Admin = () => {
+export const Admin = () => {
       const navigate = useNavigate();
 
     const [socket, setSocket] = useState(null)
@@ -64,14 +64,9 @@ const Admin = () => {
     return (
         <div className="m-2 flex flex-col">
             <CreateProblem roomId = {quizId} socket={socket} />
-            <button
-                className="mx-auto border p-3"
-                onClick={() => navigate('/leaderboard')}
-                >
-                    Create Quiz
-                    </button>
+            <QuizController socket={socket} roomId = {roomId} />
         </div>
     )
 }
 
-export default Admin
+

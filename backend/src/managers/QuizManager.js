@@ -22,7 +22,6 @@ export class QuizManager {
     addProblem(roomId, problem) {
         let quiz = this.getQuiz(roomId);
         if (!quiz) {
-            console.error("quiz has not been created")
             return;
         }
 
@@ -35,24 +34,29 @@ export class QuizManager {
     }
 
     next(roomId) {
-        console.log("in")
         const quiz = this.getQuiz(roomId);
         if (!quiz) {
             return;
         }
-        console.log(quiz)
         quiz.next();
     }
 
     addUser(roomId, name) {
         const quiz = this.getQuiz(roomId);
         if (quiz) {
-            quiz.addUser(name);
+            const userId = quiz.addUser(name);
+
+            return userId
+        }
+        else{
+            console.error("Error while adding User")
         }
     }
 
     submit(roomId, userId, problemId, submission) {
-        return this.getQuiz(roomId)?.submit(userId, roomId, problemId, submission);
+        const room = this.getQuiz(roomId);
+
+        return this.getQuiz(roomId)?.submit(userId, problemId, submission);
     }
 
     getQuiz(roomId) {
