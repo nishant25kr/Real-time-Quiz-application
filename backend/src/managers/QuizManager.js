@@ -45,11 +45,10 @@ export class QuizManager {
         const quiz = this.getQuiz(roomId);
         if (quiz) {
             const userId = quiz.addUser(name);
-
             return userId
         }
         else{
-            console.error("Error while adding User")
+            return;
         }
     }
 
@@ -76,5 +75,10 @@ export class QuizManager {
         this.#quizes.push(quiz);
         return quiz;
     }
+
+    
+
+
+
 
 }

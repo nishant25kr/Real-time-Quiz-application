@@ -15,33 +15,41 @@ export class UserManager {
     createHandler(socket) {
 
         socket.on("join", (data) => {
-
+            console.log("inside join");
             const userId = this.quizManager.addUser(data.roomId, data.name)
-            socket.emit("init", {
-                userId,
-                state: this.quizManager.getCurrentState(data.roomId)
-            })
-            socket.join(data.roomId);
+            if (!userId) {
+                // return null;
+                socket.emit("join-error", "Room not found")
+                return;
+            }
+            else {
+                socket.emit("init", {
+                    userId,
+                    state: this.quizManager.getCurrentState(data.roomId)
+                })
+                socket.join(data.roomId);
+            }
+
         })
 
         socket.on("joinAdmin", (data) => {
             if (data.password !== ADMIN_PASSWORD) {
                 return;
             }
-            
+
             socket.on("createQuiz", data => {
                 this.quizManager.addQuiz(data.roomId);
             })
-            
+
             socket.on("createProblem", data => {
                 this.quizManager.addProblem(data.roomId, data.problem);
             });
-            
+
             socket.on("next", data => {
 
                 this.quizManager.next(data.roomId);
             });
-            
+
         })
 
         socket.on("submit", (data) => {
